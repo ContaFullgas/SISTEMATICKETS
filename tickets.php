@@ -130,25 +130,53 @@ $("#add").submit(function(event) {
 
 
 
-$( "#upd" ).submit(function( event ) {
-  $('#upd_data').attr("disabled", true);
+// $( "#upd" ).submit(function( event ) {
+//   $('#upd_data').attr("disabled", true);
   
- var parametros = $(this).serialize();
-     $.ajax({
-            type: "POST",
-            url: "action/updticket.php",
-            data: parametros,
-             beforeSend: function(objeto){
-                $("#result2").html("Mensaje: Cargando...");
-              },
-            success: function(datos){
+//  var parametros = $(this).serialize();
+//      $.ajax({
+//             type: "POST",
+//             url: "action/updticket.php",
+//             data: parametros,
+//              beforeSend: function(objeto){
+//                 $("#result2").html("Mensaje: Cargando...");
+//               },
+//             success: function(datos){
+//             $("#result2").html(datos);
+//             $('#upd_data').attr("disabled", false);
+//             load(1);
+//           }
+//     });
+//   event.preventDefault();
+// })
+
+//Metodo para actualizar modal
+$("#upd").submit(function(event) {
+    event.preventDefault(); // Primero evitamos el comportamiento normal
+    $('#upd_data').attr("disabled", true);
+
+    var parametros = $(this).serialize();
+    $.ajax({
+        type: "POST",
+        url: "action/updticket.php",
+        data: parametros,
+        beforeSend: function(objeto) {
+            $("#result2").html("Mensaje: Cargando...");
+        },
+        success: function(datos) {
             $("#result2").html(datos);
             $('#upd_data').attr("disabled", false);
             load(1);
-          }
+
+            // NUEVO:
+            var ticketId = $("#mod_id").val();
+            setTimeout(function() {
+                obtener_datos(ticketId); // <- Aquí actualizamos los datos del modal después de recargar
+            }, 500); // pequeño retraso para dar tiempo a que el load(1) termine
+        }
     });
-  event.preventDefault();
-})
+});
+
 
     function obtener_datos(id){
         var description = $("#description"+id).val();
@@ -168,6 +196,22 @@ $( "#upd" ).submit(function( event ) {
             $("#mod_priority_id").val(priority_id);
             $("#mod_status_id").val(status_id);
             $("#mod_asigned_id").val(asigned_id);
+        
+            //funcion para obtener los comentarios del ticket de la base de datos
+            loadComments(id); // <-- Agrega esto
+            // Consultar si el ticket está terminado
+            $.ajax({
+                url: "action/check_ticket_status.php", // Archivo que crearemos
+                type: "GET",
+                data: { ticket_id: id },
+                success: function(response) {
+                    if (response.trim() === "terminado") {
+                        $("#new_comment_section").hide(); // Oculta el formulario
+                    } else {
+                        $("#new_comment_section").show(); // Muestra el formulario
+                    }
+                }
+            });
         }
 
 // codigo nuevo para manejar la subida de archivos
@@ -194,5 +238,39 @@ $( "#upd" ).submit(function( event ) {
 //     event.preventDefault(); // Previene que el formulario se envíe de manera tradicional (recargando la página)
 // });
 
+//Funcion para agregar comentario que utiliza el archivo addcoment en la carpeta action
+function addComment() {
+    var ticketId = $("#mod_id").val(); // ID del ticket abierto
+    var comment = $("#comment_text").val();
+    if (comment.trim() == "") {
+        alert("El comentario no puede estar vacío.");
+        return;
+    }
+
+    $.ajax({
+        type: "POST",
+        url: "action/addcomment.php",
+        data: { ticket_id: ticketId, comment: comment },
+        beforeSend: function() {
+            // Puedes mostrar un "cargando" si quieres
+        },
+        success: function(response) {
+            $("#comment_text").val(""); // Limpiar textarea
+            loadComments(ticketId); // Recargar los comentarios
+        }
+    });
+}
+
+//Funcion para cargar comentarios que utiliza el archivo getcomments en la carpeta action
+function loadComments(ticketId) {
+    $.ajax({
+        url: "action/getcomments.php",
+        type: "GET",
+        data: { ticket_id: ticketId },
+        success: function(response) {
+            $("#comments_section").html(response);
+        }
+    });
+}
 
 </script>

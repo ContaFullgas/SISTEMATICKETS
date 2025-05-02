@@ -93,7 +93,7 @@
 	// Verificar si se han subido archivos
 	if (isset($_FILES['imagen'])) {
 		// Ruta absoluta a la carpeta de destino en tu servidor
-		$upload_dir = $_SERVER['DOCUMENT_ROOT'] . "/xampp/ticketly-master/images/ticket/";
+		$upload_dir = $_SERVER['DOCUMENT_ROOT'] . "/xampp/SISTEMATICKETS/images/ticket/";
 
 		// Recorrer todos los archivos subidos
 		foreach ($_FILES['imagen']['tmp_name'] as $key => $tmp_name) {
