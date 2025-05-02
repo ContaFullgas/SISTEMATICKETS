@@ -42,14 +42,14 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12">Descripción <span class="required">*</span>
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                              <textarea name="description" id="mod_description" class="form-control col-md-7 col-xs-12" required></textarea>
+                              <textarea  name="description" id="mod_description" class="form-control col-md-7 col-xs-12" value="<?php echo $name; ?>" <?php echo ($arregloUsuario['tipousuario'] == 0) ? 'disabled' : ''; ?> required></textarea>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Proyecto
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                                <select class="form-control" name="project_id" required id="mod_project_id">
+                                <select class="form-control" value="<?php echo $name; ?>" <?php echo ($arregloUsuario['tipousuario'] == 0) ? 'disabled' : ''; ?> name="project_id" required id="mod_project_id">
                                     <option selected="" value="">-- Selecciona --</option>
                                       <?php foreach($projects as $p):?>
                                         <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
@@ -61,7 +61,7 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Categoria
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                                <select class="form-control" name="category_id" required id="mod_category_id">
+                                <select class="form-control" value="<?php echo $name; ?>" <?php echo ($arregloUsuario['tipousuario'] == 0) ? 'disabled' : ''; ?> name="category_id" required id="mod_category_id">
                                     <option selected="" value="">-- Selecciona --</option>
                                       <?php foreach($categories as $p):?>
                                         <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
@@ -73,7 +73,7 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Prioridad
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                                <select class="form-control" name="priority_id" required id="mod_priority_id">
+                                <select class="form-control" value="<?php echo $name; ?>" <?php echo ($arregloUsuario['tipousuario'] == 0) ? 'disabled' : ''; ?> name="priority_id" required id="mod_priority_id">
                                     <option selected="" value="">-- Selecciona --</option>
                                   <?php foreach($priorities as $p):?>
                                     <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
@@ -85,7 +85,7 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Estado
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                                <select  class="form-control" name="status_id" required id="mod_status_id">
+                                <select  class="form-control" value="<?php echo $name; ?>" <?php echo ($arregloUsuario['tipousuario'] == 0) ? 'disabled' : ''; ?> name="status_id" required id="mod_status_id">
                                     <option selected="" value="">-- Selecciona --</option>
                                   <?php foreach($statuses as $p):?>
                                     <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
@@ -95,7 +95,8 @@
                         </div>
                         
                         <!-- Nuevo contenedor para actualizar el agente asignado -->
-                        <div class="form-group">
+                        <div class="<?php echo ($arregloUsuario['tipousuario'] == 1)?'visible':'hidden'; ?> > form-group">
+                          <!-- Se agrega el cambio de arriba para que los agentes no les aparezca el apartado de cambiar agente y no hagan trampa-->
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Agente asignado
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
@@ -111,10 +112,25 @@
                         <div class="ln_solid"></div>
                         <div class="form-group">
                             <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-                              <button id="upd_data" type="submit" class="btn btn-success">Guardar</button>
+                              <button id="upd_data" type="submit" class="btn btn-success" value="<?php echo $name; ?>" <?php echo ($arregloUsuario['tipousuario'] == 0) ? 'disabled' : ''; ?> >Guardar</button>
                             </div>
                         </div>
-                    </form>                
+                    </form>      
+                    
+                    <h4><b>Comentarios</b></h4> <!-- Aquí el encabezado -->
+                    <hr style='margin: 2px 0;'>
+                    <div id="comments_section">
+                      <!-- Aquí se cargarán los comentarios vía AJAX -->
+                    </div>
+
+                    <div  id="new_comment_section" class="<?php echo ($arregloUsuario['tipousuario'] == 0 || $arregloUsuario['tipousuario'] == 2)?'visible':'hidden'; ?> > form-group">
+                      <!-- Se agrega el cambio de arriba para que solo los agentes y usuarios puedan realizar comentarios en el ticket-->
+                        <label for="comment">Nuevo Comentario</label>
+                        <textarea id="comment_text" class="form-control" rows="3" placeholder="Escribe tu comentario..."></textarea>
+                        <br>
+                        <button type="button" class="btn btn-primary" onclick="addComment()">Agregar Comentario</button>
+                    </div>
+                    
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
