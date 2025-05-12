@@ -45,6 +45,11 @@
                         <a href="users.php"><i class="fa fa-users"></i> Usuarios</a>
                     </li>
 
+                    <!-- Clase que usa el arregloUsuario para ocultar las etiquetas de acuerdo al perfil del usuario -->
+                    <li class="<?php if(isset($active6)){echo $active6;}?> <?php echo ($arregloUsuario['tipousuario'] == 1)?'visible':'hidden'; ?>">
+                        <a href="evaluaciones.php"><i class="fa fa-clipboard"></i> Evaluaciones</a>
+                    </li>
+
                     <li class="<?php if(isset($active8)){echo $active8;}?>">
                         <a href="about.php"><i class="fa fa-child"></i> Sobre Mi</a>
                     </li>

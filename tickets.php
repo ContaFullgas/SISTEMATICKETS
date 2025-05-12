@@ -9,13 +9,19 @@
             <div class="page-title">
                 <div class="clearfix"></div>
                 <div class="col-md-12 col-sm-12 col-xs-12">
+                
                     <?php
-                        include("modal/new_ticket.php");
+                       
+                        //Validacion para que solo los usuarios puedan subir un ticket
+                        if (isset($_SESSION['tipousuario']) && $_SESSION['tipousuario'] == 0) {
+                            include("modal/new_ticket.php");
+                        }
                         include("modal/upd_ticket.php");
                     ?>
+
                     <div class="x_panel">
                         <div class="x_title">
-                            <h2>Gastos</h2>
+                            <h2>Tickets</h2>
                             <ul class="nav navbar-right panel_toolbox">
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                                 </li>
@@ -28,9 +34,9 @@
                         <!-- form seach -->
                         <form class="form-horizontal" role="form" id="gastos">
                             <div class="form-group row">
-                                <label for="q" class="col-md-2 control-label">Nombre/Asunto</label>
+                                <label for="q" class="col-md-2 control-label">Folio/Asunto</label>
                                 <div class="col-md-4">
-                                    <input type="text" class="form-control" id="q" placeholder="Nombre del ticket" onkeyup='load(1);'>
+                                    <input type="text" class="form-control" id="q" placeholder="Folio o asunto del ticket" onkeyup='load(1);'>
                                 </div>
                                 <div class="col-md-3">
                                     <button type="button" class="btn btn-default" onclick='load(1);'>
