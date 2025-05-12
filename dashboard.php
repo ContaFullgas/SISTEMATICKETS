@@ -19,8 +19,37 @@
     // echo "</pre>";
 
 ?>
+
+
     <div class="right_col" role="main"> <!-- page content -->
         <div class="">
+
+        <!-- Consulta para extraer el folio del ticket y el nombre del agente para la notificacion de evaluacion de tickets -->
+        <?php
+            $userId = $_SESSION['user_id'];
+            $ticketCheck = mysqli_query($con, "
+                SELECT t.id, u.name AS agente
+                FROM ticket t
+                LEFT JOIN user u ON t.asigned_id = u.id
+                LEFT JOIN ticket_evaluation te ON t.id = te.ticket_id 
+                WHERE t.user_id = '$userId' AND t.status_id = 3 AND te.id IS NULL
+            ");
+
+            $ticketPendiente = mysqli_fetch_assoc($ticketCheck);
+            $idTicketPendiente = $ticketPendiente['id'] ?? null;
+            $agenteAsignado = $ticketPendiente['agente'] ?? 'No asignado';
+
+
+
+            if ($idTicketPendiente) {
+                echo '<div class="alert alert-info" role="alert" style="font-size: 17px;">
+                        Tienes un ticket terminado con Folio ' . $idTicketPendiente . ' pendiente por evaluar.
+                        <br> <br>
+                        <button id="openEvaluationModal" class="btn btn-warning">Evaluar Ticket</button>
+                    </div>';
+            }
+        ?>
+
             <div class="page-title">
                 <div class="row top_tiles">
                     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
@@ -145,6 +174,81 @@
     </div><!-- /page content -->
 
 <?php include "footer.php" ?>
+
+<!-- Modal Evaluación de tickets -->
+<div id="evaluationModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <form id="formEvaluarTicket">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" style="font-size: 2rem;">Evaluar Atención del Ticket</h5>
+          <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-center" style="font-size: 1.2rem;">
+          <input type="hidden" name="ticket_id" id="ticket_id_evaluar" value="">
+          
+          <p style="font-size: 2rem;"><strong>Folio del Ticket: </strong><?php echo $idTicketPendiente ?> <span id="folioTexto"></span></p>
+          <p style="font-size: 2rem;"><strong>Agente Asignado: </strong><?php echo $agenteAsignado; ?></p>
+
+          <hr>
+
+        <div class="my-3">
+            <label style="font-size: 5rem; margin: 0 45px;"><input type="radio" name="calificacion" value="1"> 😠</label>
+            <label style="font-size: 5rem; margin: 0 45px;"><input type="radio" name="calificacion" value="2"> 😐</label>
+            <label style="font-size: 5rem; margin: 0 45px;"><input type="radio" name="calificacion" value="3"> 😊</label>
+        </div>
+
+
+          <div id="motivoArea" style="display:none; margin-top: 15px;">
+            <textarea name="motivo" class="form-control" rows="3" placeholder="¿Por qué la mala calificación?" style="font-size: 1.5rem;"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success" style="font-size: 1.5rem;">Enviar evaluación</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+        // Abrir el modal y asignar ticket_id
+        $("#openEvaluationModal").click(function() {
+        $("#ticket_id_evaluar").val("<?php echo $idTicketPendiente; ?>");
+        $("#evaluationModal").modal("show");
+        });
+
+        // Mostrar campo de motivo si se elige carita negativa
+        $("input[name='calificacion']").on("change", function() {
+        if ($(this).val() == "1") {
+            $("#motivoArea").show();
+        } else {
+            $("#motivoArea").hide();
+        }
+        });
+
+        // Enviar evaluación
+        $("#formEvaluarTicket").submit(function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: "action/evaluar_ticket.php",
+            method: "POST",
+            data: $(this).serialize(),
+            success: function(response) {
+            alert("Gracias por tu evaluación.");
+            $("#evaluationModal").modal("hide");
+            location.reload();
+            }
+        });
+        });
+    });
+</script>
+
+
 <script>
     $(function(){
         $("input[name='file']").on("change", function(){

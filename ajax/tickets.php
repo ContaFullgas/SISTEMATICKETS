@@ -40,7 +40,8 @@
     if($action == 'ajax'){
         // escaping, additionally removing everything that could be (html/javascript-) code
          $q = mysqli_real_escape_string($con,(strip_tags($_REQUEST['q'], ENT_QUOTES)));
-         $aColumns = array('title');//Columnas de busqueda
+        //  $aColumns = array('id');//Columnas de busqueda
+        $aColumns = array('t.id', 'c.name');
 
         //Código antiguo
         //  $sTable = "ticket";
@@ -59,7 +60,8 @@
 
 
         //Nuevo código para filtrar los tickets por nivel, usuario, agente o administrador
-        $sTable = "ticket";
+        // $sTable = "ticket";
+        $sTable = "ticket t INNER JOIN category c ON t.category_id = c.id";
         $sWhere = "WHERE 1=1"; // Inicializamos la cláusula WHERE
 
         // Filtrar según el tipo de usuario
@@ -98,7 +100,9 @@
         $total_pages = ceil($numrows/$per_page);
         $reload = './expences.php';
         //main query to fetch the data
-        $sql="SELECT * FROM  $sTable $sWhere LIMIT $offset,$per_page";
+        // $sql="SELECT * FROM  $sTable $sWhere LIMIT $offset,$per_page";
+        $sql = "SELECT t.*, c.name AS category_name FROM $sTable $sWhere LIMIT $offset, $per_page";
+
         $query = mysqli_query($con, $sql);
         //loop through fetched data
         if ($numrows>0){
@@ -107,6 +111,7 @@
             <table class="table table-striped jambo_table bulk_action">
                 <thead>
                     <tr class="headings">
+                        <th class="column-title">Folio </th>
                         <th class="column-title">Asunto </th>
                         <th class="column-title">Proyecto </th>
                         <th class="column-title">Prioridad </th>
@@ -149,7 +154,9 @@
                             }
 
                             //Para obtener el nombre del servicio almacenado en categorias
-                            $sql = mysqli_query($con, "select * from category where id=$category_id");
+                            // $sql = mysqli_query($con, "select * from category where id=$category_id");
+                            $name_category = $r['category_name'];
+
                             if($c=mysqli_fetch_array($sql)) {
                                 $name_category=$c['name'];
                             }
@@ -192,6 +199,7 @@
 
 
                     <tr class="even pointer">
+                        <td><?php echo $id;?></td>
                         <td><?php echo $name_category;?></td>
                         <td><?php echo $name_project; ?></td>
                         <td><?php echo $name_priority; ?></td>
