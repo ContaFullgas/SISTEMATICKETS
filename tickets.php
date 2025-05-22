@@ -130,6 +130,11 @@ $("#add").submit(function(event) {
             $("#result").html(response); // Muestra la respuesta del servidor
             $('#save_data').attr("disabled", false); // Habilita nuevamente el botón
             load(1); // Recargar la tabla con los datos nuevos
+
+            // Luego limpia y cierra modal
+            $("#add")[0].reset();
+            // sleep(3);  // Pausa 3 segundos
+        //    $(".bs-example-modal-lg-add").modal('hide');
         }
     });
 });

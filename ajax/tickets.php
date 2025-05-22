@@ -126,7 +126,8 @@
                 <?php 
                         while ($r=mysqli_fetch_array($query)) {
                             $id=$r['id'];
-                            $created_at=date('d/m/Y', strtotime($r['created_at']));
+                            // $created_at=date('d/m/Y', strtotime($r['created_at']));
+                            $created_at = date('d/m/Y H:i:s', strtotime($r['created_at'])); //Mostrar fecha y hora
                             $description=$r['description'];
                             $title=$r['title'];
                             $project_id=$r['project_id'];
