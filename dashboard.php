@@ -57,7 +57,7 @@
             $ticketsAsignados = mysqli_query($con, "
                 SELECT id, title 
                 FROM ticket 
-                WHERE asigned_id = $userId AND status_id = 1
+                WHERE asigned_id = $userId AND status_id IN (1, 2)
             ");
             
             if (mysqli_num_rows($ticketsAsignados) > 0) {
