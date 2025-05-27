@@ -50,6 +50,28 @@
             }
         ?>
 
+        <!-- Codigo para mostrar notificacion de tickets -->
+        <?php
+        // Solo mostrar notificación si es agente (ajusta según cómo definas los roles)
+        if ($arregloUsuario['tipousuario'] == 2) { // Suponiendo que 2 es "agente"
+            $ticketsAsignados = mysqli_query($con, "
+                SELECT id, title 
+                FROM ticket 
+                WHERE asigned_id = $userId AND status_id = 1
+            ");
+            
+            if (mysqli_num_rows($ticketsAsignados) > 0) {
+                echo '<div class="alert alert-info" role="alert" style="font-size: 17px;">';
+                echo 'Tienes tickets asignados pendientes de atender:<br><ul>';
+                while ($ticket = mysqli_fetch_assoc($ticketsAsignados)) {
+                    echo '<li><strong>Folio:</strong> ' . $ticket['id'] . htmlspecialchars($ticket['title']) . '</li>';
+                }
+                echo '</ul>';
+                echo '</div>';
+            }
+        }
+        ?>
+
             <div class="page-title">
                 <div class="row top_tiles">
                     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
