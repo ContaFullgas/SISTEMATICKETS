@@ -21,7 +21,7 @@ if (empty($_POST['title'])) {
 
     // Inserta el ticket
     $sql= "INSERT INTO ticket (title, description, category_id, project_id, priority_id, user_id, status_id, kind_id, asigned_id, created_at) 
-            VALUES (\"$title\",\"$description\",\"$category_id\",\"$project_id\",0,$user_id,1,$kind_id,0,$created_at)";
+            VALUES (\"$title\",\"$description\",\"$category_id\",\"$project_id\",2,$user_id,1,$kind_id,0,$created_at)";
 
     $query_new_insert = mysqli_query($con,$sql);
     if ($query_new_insert){

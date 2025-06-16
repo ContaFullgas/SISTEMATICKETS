@@ -111,9 +111,38 @@
 
 
 //Se modifico para poder adjuntar el archivo y guardarlo en el servidor y su url en la base de datos
+// $("#add").submit(function(event) {
+//     event.preventDefault(); // Evita el envío tradicional del formulario
+//     $('#save_data').attr("disabled", true); // Deshabilita el botón para evitar múltiples envíos
+
+//     var formData = new FormData($(this)[0]); // Crear un objeto FormData con los datos del formulario
+
+//     $.ajax({
+//         type: "POST",
+//         url: "action/addticket.php", // Archivo PHP que procesará la solicitud
+//         data: formData,
+//         contentType: false, // No especificamos el tipo de contenido porque FormData lo maneja automáticamente
+//         processData: false, // No procesamos los datos ya que FormData lo maneja
+//         beforeSend: function() {
+//             $("#result").html("Mensaje: Cargando...");
+//         },
+//         success: function(response) {
+//             $("#result").html(response); // Muestra la respuesta del servidor
+//             $('#save_data').attr("disabled", false); // Habilita nuevamente el botón
+//             load(1); // Recargar la tabla con los datos nuevos
+
+//             // Luego limpia y cierra modal
+//             $("#add")[0].reset();
+//             // sleep(3);  // Pausa 3 segundos
+//         //    $(".bs-example-modal-lg-add").modal('hide');
+//         }
+//     });
+// });
+
+//Se modifico para poder adjuntar el archivo y guardarlo en el servidor y su url en la base de datos
 $("#add").submit(function(event) {
     event.preventDefault(); // Evita el envío tradicional del formulario
-    $('#save_data').attr("disabled", true); // Deshabilita el botón para evitar múltiples envíos
+    $('#save_data').attr("disabled", true); // Deshabilita el botón
 
     var formData = new FormData($(this)[0]); // Crear un objeto FormData con los datos del formulario
 
@@ -127,18 +156,28 @@ $("#add").submit(function(event) {
             $("#result").html("Mensaje: Cargando...");
         },
         success: function(response) {
-            $("#result").html(response); // Muestra la respuesta del servidor
-            $('#save_data').attr("disabled", false); // Habilita nuevamente el botón
-            load(1); // Recargar la tabla con los datos nuevos
+            // Muestra la respuesta de PHP (puedes hacer validaciones si deseas)
+            $("#result").html(response);
 
-            // Luego limpia y cierra modal
-            $("#add")[0].reset();
-            // sleep(3);  // Pausa 3 segundos
-        //    $(".bs-example-modal-lg-add").modal('hide');
+            $('#save_data').attr("disabled", false); // Habilita nuevamente el botón
+            $("#add")[0].reset(); // Limpia el formulario
+            load(1); // Recarga los tickets
+
+            // Muestra mensaje de éxito
+            $("#result").html('<div class="alert alert-success">Ticket creado correctamente</div>');
+
+            // Espera 2 segundos y cierra el modal
+            setTimeout(function() {
+                $('#modalNuevoTicket').modal('hide');
+                $("#result").html(""); // Limpia mensaje
+            }, 2000);
+        },
+        error: function() {
+            $("#result").html('<div class="alert alert-danger">Error al enviar el ticket</div>');
+            $('#save_data').attr("disabled", false);
         }
     });
 });
-
 
 
 // $( "#upd" ).submit(function( event ) {

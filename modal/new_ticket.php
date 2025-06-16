@@ -10,7 +10,7 @@
     <div> <!-- Modal -->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg-add"><i class="fa fa-plus-circle"></i> Agregar Ticket</button>
     </div>
-    <div class="modal fade bs-example-modal-lg-add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade bs-example-modal-lg-add" tabindex="-1" role="dialog" aria-hidden="true" id='modalNuevoTicket'>
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
