@@ -212,7 +212,7 @@
 
                         <!-- Aqui se agregaron validaciones con clases para evitar que un usuario pueda hacer modificaciones a los tickets -->
                         <a href="#" class="<?php echo ($arregloUsuario['tipousuario'] == 0 || $arregloUsuario['tipousuario'] == 1 || $arregloUsuario['tipousuario'] == 2)?'visible':'hidden'; ?> > btn btn-default" title='Editar producto' onclick="obtener_datos('<?php echo $id;?>');" data-toggle="modal" data-target=".bs-example-modal-lg-udp"><i class="glyphicon glyphicon-edit"></i></a> 
-                        <a href="#" class="<?php echo ($arregloUsuario['tipousuario'] == 1 || $arregloUsuario['tipousuario'] == 2)?'visible':'hidden'; ?> > btn btn-default" title='Borrar producto' onclick="eliminar('<?php echo $id; ?>')"><i class="glyphicon glyphicon-trash"></i> </a></span></td>
+                        <a href="#" class="<?php echo ($arregloUsuario['tipousuario'] == 1)?'visible':'hidden'; ?> > btn btn-default" title='Borrar producto' onclick="eliminar('<?php echo $id; ?>')"><i class="glyphicon glyphicon-trash"></i> </a></span></td>
                     </tr>
                 <?php
                     } //en while

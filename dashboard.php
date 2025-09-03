@@ -17,6 +17,17 @@
     // echo "<pre>";  // Formatea la salida para mejorar la visualización
     // print_r($arregloUsuario['tipousuario']);
     // echo "</pre>";
+    
+    // Detecta tipousuario desde donde lo tengas disponible
+    $rol = null;
+    if (isset($arregloUsuario['tipousuario'])) {
+        $rol = (int)$arregloUsuario['tipousuario'];
+    } elseif (isset($_SESSION['tipousuario'])) {
+        $rol = (int)$_SESSION['tipousuario'];
+    }
+
+    // Admin es 1
+    $ES_ADMIN = ($rol === 1);
 
 ?>
 
@@ -73,6 +84,8 @@
         ?>
 
             <div class="page-title">
+            <!-- Validacion para mostrar los datos generales solo al administrador -->
+              <?php if ($ES_ADMIN): ?>
                 <div class="row top_tiles">
                     <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
                         <div class="tile-stats">
@@ -103,6 +116,7 @@
                         </div>
                     </div>
                 </div>
+              <?php endif; ?>
                 <!-- content -->
                 <br><br>
                 <div class="row">

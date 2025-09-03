@@ -47,7 +47,7 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Servicio:
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                                <select class="form-control" name="category_id" >
+                                <select class="form-control" name="category_id" required>
                                     <option selected="" value="">-- Selecciona --</option>
                                       <?php foreach($categories as $p):?>
                                         <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
@@ -61,7 +61,7 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Area:
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                                <select class="form-control" name="project_id" >
+                                <select class="form-control" name="project_id" required>
                                     <option selected="" value="">-- Selecciona --</option>
                                       <?php foreach($projects as $p):?>
                                         <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
@@ -74,12 +74,12 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12">Incidencia detallada:<span class="required">*</span>
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                              <textarea name="description" class="form-control col-md-7 col-xs-12"  placeholder="Descripción"></textarea>
+                              <textarea name="description" class="form-control col-md-7 col-xs-12"  placeholder="Descripción" required></textarea>
                             </div>
                         </div>
                         
                         <!-- Clase para ocultar apartado a usuarios -->
-                        <div class="<?php echo ($arregloUsuario['tipousuario'] == 1)?'visible':'hidden'; ?> > form-group">
+                        <div class="<?php echo ($arregloUsuario['tipousuario'] == 1)?'visible':'hidden'; ?> form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Prioridad:
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
@@ -92,7 +92,7 @@
                             </div>
                         </div>
                         <!-- Clase para ocultar apartado a usuarios -->
-                        <div class="<?php echo ($arregloUsuario['tipousuario'] == 1)?'visible':'hidden'; ?> > form-group">
+                        <div class="<?php echo ($arregloUsuario['tipousuario'] == 1)?'visible':'hidden'; ?> form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Estado:
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
