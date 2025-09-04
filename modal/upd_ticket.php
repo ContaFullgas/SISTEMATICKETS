@@ -7,7 +7,7 @@
     $users = mysqli_query($con, "SELECT * FROM user WHERE tipousuario IN (2)");
 ?>
     <!-- Modal -->
-    <div class="modal fade bs-example-modal-lg-udp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade bs-example-modal-lg-udp" id="modalUpdTicket" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">

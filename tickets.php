@@ -201,31 +201,92 @@ $("#add").submit(function(event) {
 // })
 
 //Metodo para actualizar modal
+// $("#upd").submit(function(event) {
+//     event.preventDefault(); // Primero evitamos el comportamiento normal
+//     $('#upd_data').attr("disabled", true);
+
+//     var parametros = $(this).serialize();
+//     $.ajax({
+//         type: "POST",
+//         url: "action/updticket.php",
+//         data: parametros,
+//         beforeSend: function(objeto) {
+//             $("#result2").html("Mensaje: Cargando...");
+//         },
+//         success: function(datos) {
+//             $("#result2").html(datos);
+//             $('#upd_data').prop("disabled", false);
+
+//             // Recarga la tabla
+//             load(1);
+
+//             // Cierra el modal (usa el id correcto)
+//             // $('#modalUpdTicket').modal('hide');
+
+//             // Limpia
+//             // $("#upd")[0].reset();
+//             // $("#result2").empty();
+
+//             setTimeout(function() {
+//                 $('#modalUpdTicket').modal('hide');
+//                 $("#upd")[0].reset();
+//                 $("#result2").empty();
+//             }, 2000);
+//         }
+
+//     });
+// });
+
 $("#upd").submit(function(event) {
-    event.preventDefault(); // Primero evitamos el comportamiento normal
-    $('#upd_data').attr("disabled", true);
+  event.preventDefault();
+  var $modal = $('#modalUpdTicket');
 
-    var parametros = $(this).serialize();
-    $.ajax({
-        type: "POST",
-        url: "action/updticket.php",
-        data: parametros,
-        beforeSend: function(objeto) {
-            $("#result2").html("Mensaje: Cargando...");
-        },
-        success: function(datos) {
-            $("#result2").html(datos);
-            $('#upd_data').attr("disabled", false);
-            load(1);
+  $('#upd_data').prop("disabled", true);
 
-            // NUEVO:
-            var ticketId = $("#mod_id").val();
-            setTimeout(function() {
-                obtener_datos(ticketId); // <- Aquí actualizamos los datos del modal después de recargar
-            }, 500); // pequeño retraso para dar tiempo a que el load(1) termine
-        }
-    });
+  $.ajax({
+    type: "POST",
+    url: "action/updticket.php",
+    data: $(this).serialize(),
+    beforeSend: function() {
+      $("#result2").html("Mensaje: Cargando...");
+
+      // BLOQUEAR cierre mientras procesa
+      lockUpdTicket = true;
+      $modal.find('[data-dismiss="modal"]').prop('disabled', true).addClass('disabled');
+      $modal.find('.close').prop('disabled', true).css({ 'pointer-events':'none', 'opacity':0.5 });
+    },
+    success: function(datos) {
+      $("#result2").html(datos);
+      $('#upd_data').prop("disabled", false);
+      load(1);
+
+      // Mantén el bloqueo 2s (para que el usuario vea el mensaje),
+      // luego desbloquea y cierra el modal
+      setTimeout(function() {
+        lockUpdTicket = false;
+        $modal.find('[data-dismiss="modal"]').prop('disabled', false).removeClass('disabled');
+        $modal.find('.close').prop('disabled', false).css({ 'pointer-events':'', 'opacity':'' });
+
+        $modal.modal('hide');
+        $("#upd")[0].reset();
+        $("#result2").empty();
+      }, 2000);
+
+      // Si prefieres cerrar solo cuando realmente fue éxito, descomenta:
+      // if (/\balert-success\b/.test(datos)) { ... setTimeout(...) ... }
+    },
+    error: function() {
+      // En error: desbloquea para permitir cerrar y muestra alerta
+      lockUpdTicket = false;
+      $modal.find('[data-dismiss="modal"]').prop('disabled', false).removeClass('disabled');
+      $modal.find('.close').prop('disabled', false).css({ 'pointer-events':'', 'opacity':'' });
+
+      $('#upd_data').prop("disabled", false);
+      $("#result2").html('<div class="alert alert-danger">Error al actualizar</div>');
+    }
+  });
 });
+
 
 
     function obtener_datos(id){
