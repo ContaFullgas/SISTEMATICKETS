@@ -142,7 +142,7 @@ $kinds = mysqli_query($con, "SELECT * FROM kind");
                                 <table class="table table-bordered table-hover" id="tablaReportes">
                                     <thead>
                                         <th>Folio</th>
-                                        <th>Asunto</th>
+                                        <th>Agente</th>
                                         <th>Proyecto</th>
                                         <th>Tipo</th>
                                         <th>Categoria</th>
@@ -169,7 +169,16 @@ $kinds = mysqli_query($con, "SELECT * FROM kind");
                                             ?>
                                             <tr>
                                                 <td><?php echo (int)$user['id']; ?></td> <!-- FOLIO -->
-                                                <td><?php echo $user['title'] ?></td>
+                                                 <?php
+                                                    // Obtener nombre del agente asignado
+                                                    $agent_name = 'No asignado';
+                                                    if (!empty($user['asigned_id'])) {
+                                                    $agent_id = (int)$user['asigned_id'];
+                                                    $agentRow = mysqli_fetch_assoc(mysqli_query($con, "SELECT name FROM user WHERE id = $agent_id"));
+                                                    if ($agentRow) { $agent_name = $agentRow['name']; }
+                                                    }
+                                                ?>
+                                                <td><?php echo htmlspecialchars($agent_name); ?></td> <!-- AGENTE (nuevo) -->
                                                 <td><?php echo $project['name'] ?></td>
                                                 <td><?php echo $kind['name'] ?></td>
                                                 <td><?php echo $category['name']; ?></td>
@@ -202,7 +211,7 @@ $kinds = mysqli_query($con, "SELECT * FROM kind");
 $(function(){
   if ($.fn.DataTable) {
     $('#tablaReportes').DataTable({
-    order: [[0, 'asc']],          // Folio ascendente
+    order: [[0, 'desc']],          // Folio ascendente
     pageLength: 10,               // 10 filas por página
     lengthMenu: [[10,25,50,-1], [10,25,50,'Todos']],
     stateSave: true,              // recuerda el estado (orden, página, etc.)

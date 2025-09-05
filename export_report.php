@@ -55,7 +55,8 @@ if (!empty($_GET['q'])) {
                     OR p.name LIKE '%$q%' 
                     OR c.name LIKE '%$q%' 
                     OR pr.name LIKE '%$q%' 
-                    OR s.name LIKE '%$q%')";
+                    OR s.name LIKE '%$q%'
+                    OR au.name LIKE '%$q%')";  // ← NUEVO"
 }
 
 $where = count($conditions) ? ("WHERE ".implode(" AND ", $conditions)) : "";
@@ -72,6 +73,7 @@ $sql = "
     c.name  AS category,
     pr.name AS priority,
     s.name  AS status,
+    au.name AS agent,       -- ← NUEVO
     t.created_at,
     t.updated_at
   FROM ticket t
@@ -80,6 +82,7 @@ $sql = "
   LEFT JOIN category c  ON c.id  = t.category_id
   LEFT JOIN priority pr ON pr.id = t.priority_id
   LEFT JOIN status   s  ON s.id  = t.status_id
+  LEFT JOIN user     au ON au.id = t.asigned_id   -- ← NUEVO
   $where
   ORDER BY t.created_at desc
 ";
@@ -100,16 +103,18 @@ echo "\xEF\xBB\xBF";
 $out = fopen("php://output", "w");
 
 // Cabecera del archivo
-$headers = ["Folio","Asunto","Proyecto","Tipo","Categoria","Prioridad","Estado","Fecha creación","Última actualización"];
+$headers = ["Folio","Agente","Proyecto","Tipo","Categoria","Prioridad","Estado","Fecha creación","Última actualización"];
 fputcsv($out, $headers);
 
 // Filas
 if ($res && mysqli_num_rows($res) > 0) {
   while ($row = mysqli_fetch_assoc($res)) {
+    //Linea para agente asignado
+    $agent = !empty($row['agent']) ? $row['agent'] : 'No asignado';
     // Arma la fila; usa el mismo orden que cabeceras
     $line = [
       $row['id'],
-      $row['title'],
+      $agent,              // ← antes era $row['title']
       $row['project'],
       $row['kind'],
       $row['category'],
