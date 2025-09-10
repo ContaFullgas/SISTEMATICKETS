@@ -16,6 +16,7 @@
 		{
 				
 				$_SESSION['user_id'] = $row['id'];
+				$_SESSION['tipousuario'] = $row['tipousuario']; // <-- Aquí guardas el tipo de usuario
 				header("location: ../dashboard.php");
 				
 		}

@@ -96,52 +96,53 @@ $kinds = mysqli_query($con, "SELECT * FROM kind");
                             <div class="col-lg-6">
                                 <button class="btn btn-primary btn-block">Procesar</button>
                             </div>
+                            <div class="col-lg-6">
+                                <!-- Este botón manda el mismo form a export_report.php con método GET -->
+                                <br>
+                                <!-- Input oculto para copiar los datos de los filtros del dataTable y luego pasarlos por GET al php para que realice de forma correcta la exportacion: export_report.php -->
+                                <input type="hidden" name="q" id="dtGlobalSearch" value="">
+                                <button class="btn btn-success btn-block"
+                                        type="submit"
+                                        formmethod="get"
+                                        formaction="export_report.php">
+                                Exportar a Excel
+                                </button>
+                            </div>
                         </div>
                     </form>
                     <!-- end form search -->
 
                     <?php
-                    $sql = "SELECT * FROM ticket WHERE 1=1"; // Base query
+                    $sql = "SELECT * FROM ticket WHERE 1=1";
 
-                    // Filtramos la consulta según el tipo de usuario
-                    if ($user_type == 1) {
-                        // Tipo 1: Muestra todos los tickets
-                        // No es necesario modificar la consulta
-                    } elseif ($user_type == 2) {
-                        // Tipo 2: Muestra solo los tickets asignados al usuario
-                        $sql .= " AND asigned_id = $user_id";
-                    } elseif ($user_type == 0) {
-                        // Tipo 0: Muestra solo los tickets creados por el usuario
-                        $sql .= " AND user_id = $user_id";
+                    if ($user_type == 2) { $sql .= " AND asigned_id = $user_id"; }
+                    elseif ($user_type == 0) { $sql .= " AND user_id = $user_id"; }
+
+                    if (!empty($_GET["status_id"]))   $sql .= " AND status_id = " . (int)$_GET["status_id"];
+                    if (!empty($_GET["kind_id"]))     $sql .= " AND kind_id = " . (int)$_GET["kind_id"];
+                    if (!empty($_GET["project_id"]))  $sql .= " AND project_id = " . (int)$_GET["project_id"];
+                    if (!empty($_GET["priority_id"])) $sql .= " AND priority_id = " . (int)$_GET["priority_id"];
+
+                    if (!empty($_GET["start_at"]) && !empty($_GET["finish_at"])) {
+                    $start = $_GET["start_at"] . " 00:00:00";
+                    $end   = $_GET["finish_at"] . " 23:59:59";
+                    $sql  .= " AND (created_at >= '$start' AND created_at <= '$end')";
                     }
 
-                    // Agregamos filtros adicionales si se han proporcionado
-                    if (isset($_GET["status_id"]) && $_GET["status_id"] != "") {
-                        $sql .= " AND status_id = " . $_GET["status_id"];
-                    }
-                    if (isset($_GET["kind_id"]) && $_GET["kind_id"] != "") {
-                        $sql .= " AND kind_id = " . $_GET["kind_id"];
-                    }
-                    if (isset($_GET["project_id"]) && $_GET["project_id"] != "") {
-                        $sql .= " AND project_id = " . $_GET["project_id"];
-                    }
-                    if (isset($_GET["priority_id"]) && $_GET["priority_id"] != "") {
-                        $sql .= " AND priority_id = " . $_GET["priority_id"];
-                    }
-                    if (isset($_GET["start_at"]) && isset($_GET["finish_at"]) && $_GET["start_at"] != "" && $_GET["finish_at"] != "") {
-                        $sql .= " AND (date_at >= '" . $_GET["start_at"] . "' AND date_at <= '" . $_GET["finish_at"] . "')";
-                    }
+                    $sql .= " ORDER BY id asc";
 
                     $users = mysqli_query($con, $sql);
+
 
                     if (mysqli_num_rows($users) > 0) {
                         $_SESSION["report_data"] = $users;
                     ?>
                         <div class="x_content">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
+                                <table class="table table-bordered table-hover" id="tablaReportes">
                                     <thead>
-                                        <th>Asunto</th>
+                                        <th>Folio</th>
+                                        <th>Agente</th>
                                         <th>Proyecto</th>
                                         <th>Tipo</th>
                                         <th>Categoria</th>
@@ -167,7 +168,17 @@ $kinds = mysqli_query($con, "SELECT * FROM kind");
 
                                             ?>
                                             <tr>
-                                                <td><?php echo $user['title'] ?></td>
+                                                <td><?php echo (int)$user['id']; ?></td> <!-- FOLIO -->
+                                                 <?php
+                                                    // Obtener nombre del agente asignado
+                                                    $agent_name = 'No asignado';
+                                                    if (!empty($user['asigned_id'])) {
+                                                    $agent_id = (int)$user['asigned_id'];
+                                                    $agentRow = mysqli_fetch_assoc(mysqli_query($con, "SELECT name FROM user WHERE id = $agent_id"));
+                                                    if ($agentRow) { $agent_name = $agentRow['name']; }
+                                                    }
+                                                ?>
+                                                <td><?php echo htmlspecialchars($agent_name); ?></td> <!-- AGENTE (nuevo) -->
                                                 <td><?php echo $project['name'] ?></td>
                                                 <td><?php echo $kind['name'] ?></td>
                                                 <td><?php echo $category['name']; ?></td>
@@ -194,3 +205,49 @@ $kinds = mysqli_query($con, "SELECT * FROM kind");
     </div><!-- /page content -->
 
 <?php include "footer.php" ?>
+
+<!-- Estilos, utilidades y configuraciones para tabla -->
+<script>
+$(function(){
+  if ($.fn.DataTable) {
+    $('#tablaReportes').DataTable({
+    order: [[0, 'desc']],          // Folio ascendente
+    pageLength: 10,               // 10 filas por página
+    lengthMenu: [[10,25,50,-1], [10,25,50,'Todos']],
+    stateSave: true,              // recuerda el estado (orden, página, etc.)
+    stateLoadParams: function (settings, data) {
+        data.length = 10; // fuerza 10 aunque exista estado guardado
+    },
+    language: {
+        decimal: ",",
+        thousands: ".",
+        processing: "Procesando...",
+        search: "Buscar:",
+        lengthMenu: "Mostrar _MENU_ registros",
+        info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        infoEmpty: "Mostrando 0 a 0 de 0 registros",
+        infoFiltered: "(filtrado de _MAX_ registros totales)",
+        loadingRecords: "Cargando...",
+        zeroRecords: "No se encontraron resultados",
+        emptyTable: "No hay datos disponibles en la tabla",
+        paginate: {
+        first: "Primero",
+        previous: "Anterior",
+        next: "Siguiente",
+        last: "Último"
+        }
+    }
+    });
+  }
+});
+
+$(function(){
+  var t = $('#tablaReportes').DataTable();
+  // Cada vez que cambia la búsqueda de DataTables, guardamos el texto en el hidden:
+  t.on('search.dt', function(){
+    $('#dtGlobalSearch').val(t.search());
+  });
+  // Al cargar, por si ya había algo buscado (stateSave)
+  $('#dtGlobalSearch').val(t.search());
+});
+</script>

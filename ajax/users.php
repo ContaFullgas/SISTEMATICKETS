@@ -86,7 +86,7 @@
 
                             $name=$r['name'];
                             $email=$r['email'];
-                            $created_at=date('d/m/Y', strtotime($r['created_at']));
+                            $created_at = !empty($r['created_at']) ? date('d/m/Y', strtotime($r['created_at'])) : '';
                 ?>
                     <input type="hidden" value="<?php echo $name;?>" id="name<?php echo $id;?>">
                     <input type="hidden" value="<?php echo $email;?>" id="email<?php echo $id;?>">

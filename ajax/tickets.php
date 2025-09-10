@@ -40,7 +40,8 @@
     if($action == 'ajax'){
         // escaping, additionally removing everything that could be (html/javascript-) code
          $q = mysqli_real_escape_string($con,(strip_tags($_REQUEST['q'], ENT_QUOTES)));
-         $aColumns = array('title');//Columnas de busqueda
+        //  $aColumns = array('id');//Columnas de busqueda
+        $aColumns = array('t.id', 'c.name');
 
         //Código antiguo
         //  $sTable = "ticket";
@@ -59,7 +60,8 @@
 
 
         //Nuevo código para filtrar los tickets por nivel, usuario, agente o administrador
-        $sTable = "ticket";
+        // $sTable = "ticket";
+        $sTable = "ticket t INNER JOIN category c ON t.category_id = c.id";
         $sWhere = "WHERE 1=1"; // Inicializamos la cláusula WHERE
 
         // Filtrar según el tipo de usuario
@@ -98,7 +100,9 @@
         $total_pages = ceil($numrows/$per_page);
         $reload = './expences.php';
         //main query to fetch the data
-        $sql="SELECT * FROM  $sTable $sWhere LIMIT $offset,$per_page";
+        // $sql="SELECT * FROM  $sTable $sWhere LIMIT $offset,$per_page";
+        $sql = "SELECT t.*, c.name AS category_name FROM $sTable $sWhere LIMIT $offset, $per_page";
+
         $query = mysqli_query($con, $sql);
         //loop through fetched data
         if ($numrows>0){
@@ -107,6 +111,7 @@
             <table class="table table-striped jambo_table bulk_action">
                 <thead>
                     <tr class="headings">
+                        <th class="column-title">Folio </th>
                         <th class="column-title">Asunto </th>
                         <th class="column-title">Proyecto </th>
                         <th class="column-title">Prioridad </th>
@@ -121,7 +126,8 @@
                 <?php 
                         while ($r=mysqli_fetch_array($query)) {
                             $id=$r['id'];
-                            $created_at=date('d/m/Y', strtotime($r['created_at']));
+                            // $created_at=date('d/m/Y', strtotime($r['created_at']));
+                            $created_at = date('d/m/Y H:i:s', strtotime($r['created_at'])); //Mostrar fecha y hora
                             $description=$r['description'];
                             $title=$r['title'];
                             $project_id=$r['project_id'];
@@ -149,7 +155,9 @@
                             }
 
                             //Para obtener el nombre del servicio almacenado en categorias
-                            $sql = mysqli_query($con, "select * from category where id=$category_id");
+                            // $sql = mysqli_query($con, "select * from category where id=$category_id");
+                            $name_category = $r['category_name'];
+
                             if($c=mysqli_fetch_array($sql)) {
                                 $name_category=$c['name'];
                             }
@@ -192,6 +200,7 @@
 
 
                     <tr class="even pointer">
+                        <td><?php echo $id;?></td>
                         <td><?php echo $name_category;?></td>
                         <td><?php echo $name_project; ?></td>
                         <td><?php echo $name_priority; ?></td>
@@ -203,7 +212,7 @@
 
                         <!-- Aqui se agregaron validaciones con clases para evitar que un usuario pueda hacer modificaciones a los tickets -->
                         <a href="#" class="<?php echo ($arregloUsuario['tipousuario'] == 0 || $arregloUsuario['tipousuario'] == 1 || $arregloUsuario['tipousuario'] == 2)?'visible':'hidden'; ?> > btn btn-default" title='Editar producto' onclick="obtener_datos('<?php echo $id;?>');" data-toggle="modal" data-target=".bs-example-modal-lg-udp"><i class="glyphicon glyphicon-edit"></i></a> 
-                        <a href="#" class="<?php echo ($arregloUsuario['tipousuario'] == 1 || $arregloUsuario['tipousuario'] == 2)?'visible':'hidden'; ?> > btn btn-default" title='Borrar producto' onclick="eliminar('<?php echo $id; ?>')"><i class="glyphicon glyphicon-trash"></i> </a></span></td>
+                        <a href="#" class="<?php echo ($arregloUsuario['tipousuario'] == 1)?'visible':'hidden'; ?> > btn btn-default" title='Borrar producto' onclick="eliminar('<?php echo $id; ?>')"><i class="glyphicon glyphicon-trash"></i> </a></span></td>
                     </tr>
                 <?php
                     } //en while

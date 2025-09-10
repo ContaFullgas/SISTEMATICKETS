@@ -7,7 +7,7 @@
     $users = mysqli_query($con, "SELECT * FROM user WHERE tipousuario IN (2)");
 ?>
     <!-- Modal -->
-    <div class="modal fade bs-example-modal-lg-udp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade bs-example-modal-lg-udp" id="modalUpdTicket" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
@@ -42,14 +42,27 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12">Descripción <span class="required">*</span>
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                              <textarea  name="description" id="mod_description" class="form-control col-md-7 col-xs-12" value="<?php echo $name; ?>" <?php echo ($arregloUsuario['tipousuario'] == 0) ? 'disabled' : ''; ?> required></textarea>
+                              <textarea  name="description" id="mod_description" class="form-control col-md-7 col-xs-12" required
+                              
+                              <?php if($arregloUsuario['tipousuario'] == 0 || $arregloUsuario['tipousuario'] == 2): ?>
+                                    style="pointer-events: none;" onclick="return false;" onkeydown="return false;"
+                                <?php endif; ?>>
+                                <!-- Funcion arriba para bloquear apartados en perfiles de usuario, solo se muestra a administrador y agente -->
+                                   
+                              </textarea>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Proyecto
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                                <select class="form-control" value="<?php echo $name; ?>" <?php echo ($arregloUsuario['tipousuario'] == 0) ? 'disabled' : ''; ?> name="project_id" required id="mod_project_id">
+                                <select class="form-control" name="project_id" required id="mod_project_id"
+                                
+                                <?php if($arregloUsuario['tipousuario'] == 0 || $arregloUsuario['tipousuario'] == 2): ?>
+                                    style="pointer-events: none;" onclick="return false;" onkeydown="return false;"
+                                <?php endif; ?>>
+                                  <!-- Funcion arriba para bloquear apartados en perfiles de usuario, solo se muestra a administrador y agente -->
+
                                     <option selected="" value="">-- Selecciona --</option>
                                       <?php foreach($projects as $p):?>
                                         <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
@@ -61,7 +74,13 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Categoria
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                                <select class="form-control" value="<?php echo $name; ?>" <?php echo ($arregloUsuario['tipousuario'] == 0) ? 'disabled' : ''; ?> name="category_id" required id="mod_category_id">
+                                <select class="form-control" name="category_id" required id="mod_category_id"
+
+                                <?php if($arregloUsuario['tipousuario'] == 0 || $arregloUsuario['tipousuario'] == 2): ?>
+                                    style="pointer-events: none;" onclick="return false;" onkeydown="return false;"
+                                <?php endif; ?>>
+                                  <!-- Funcion arriba para bloquear apartados en perfiles de usuario, solo se muestra a administrador y agente -->
+                                   
                                     <option selected="" value="">-- Selecciona --</option>
                                       <?php foreach($categories as $p):?>
                                         <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
@@ -73,7 +92,13 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Prioridad
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                                <select class="form-control" value="<?php echo $name; ?>" <?php echo ($arregloUsuario['tipousuario'] == 0) ? 'disabled' : ''; ?> name="priority_id" required id="mod_priority_id">
+                                <select class="form-control" name="priority_id" required id="mod_priority_id"
+
+                                <?php if($arregloUsuario['tipousuario'] == 0 || $arregloUsuario['tipousuario'] == 2): ?>
+                                    style="pointer-events: none;" onclick="return false;" onkeydown="return false;"
+                                <?php endif; ?>>
+                                  <!-- Funcion arriba para bloquear apartados en perfiles de usuario, solo se muestra a administrador y agente -->
+                                   
                                     <option selected="" value="">-- Selecciona --</option>
                                   <?php foreach($priorities as $p):?>
                                     <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
@@ -85,7 +110,12 @@
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Estado
                             </label>
                             <div class="col-md-9 col-sm-9 col-xs-12">
-                                <select  class="form-control" value="<?php echo $name; ?>" <?php echo ($arregloUsuario['tipousuario'] == 0) ? 'disabled' : ''; ?> name="status_id" required id="mod_status_id">
+                                <select  class="form-control" name="status_id" required id="mod_status_id"
+                                
+                                    <?php if($arregloUsuario['tipousuario'] == 0): ?>
+                                        style="pointer-events: none;" onclick="return false;" onkeydown="return false;"
+                                    <?php endif; ?>>
+
                                     <option selected="" value="">-- Selecciona --</option>
                                   <?php foreach($statuses as $p):?>
                                     <option value="<?php echo $p['id']; ?>"><?php echo $p['name']; ?></option>
@@ -138,3 +168,6 @@
             </div>
         </div>
     </div> <!-- /Modal -->
+    
+
+    
